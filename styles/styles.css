@@ -16,17 +16,19 @@ h1{text-align: center;}
 	line-height: 0px;
 	text-align: center;
 	display:inline-block;
+	overflow: hidden;
 
 }
 
 body{
 	text-align: center;
 	font-family: 'Patrick Hand SC', cursive;
+	overflow:hidden;
 }
 
 #food{
-	width:20px;
-	height:20px;
+	width:21px;
+	height:21px;
 	padding:0;
 	display:inline-block;
 	background-color: orange;
