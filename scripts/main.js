@@ -4,8 +4,37 @@ UP=38;
 DOWN=40;
 
 var snake = {
-	body:[[15,1],[15,2],[15,3],[15,4],[15,5],[15,6],[15,7],[15,8]],
+	body:[[15,1],[15,2],[15,3]],
 	direction: 'r'	
+}
+
+var food = {
+	position: [15,1]
+
+}
+
+function foodPlacement(){
+	food.position = [Math.floor(Math.random()*29),Math.floor(Math.random()*29)];
+	while($(`#x${food.position[0]}y${food.position[1]}`).css('background-color')==='rgb(0, 128, 0)'){
+		food.position = [Math.floor(Math.random()*29),Math.floor(Math.random()*29)];
+	}
+
+	$(`#x${food.position[0]}y${food.position[1]}`).append("<div id = 'food'></div>");
+}
+
+function hitFood(){
+	var hit = false;
+	if((snake.body[snake.body.length-1][0]===food.position[0])&&(snake.body[snake.body.length-1][1]===food.position[1])){
+		hit = true;
+	}
+	return hit;
+}
+
+function moveFood(){
+	if(hitFood()===true){
+		$('#food').remove();
+		foodPlacement();
+	}
 }
 
 function checkIfArrayIsUnique(arr) {
@@ -32,27 +61,33 @@ function grid(x,y){
 
 function drawSnake(){
 	for(i=0;i<snake.body.length;i++){
-		$(`#x${snake.body[i][0]}y${snake.body[i][1]}`).css("background-color","red");
+		$(`#x${snake.body[i][0]}y${snake.body[i][1]}`).css("background-color","#008000");
 	}
 	
 }
 
-function gameOver(){
+function selfIntersection(){
+	game_over = false;
+	if(checkIfArrayIsUnique(snake.body)===false){
+		game_over = true;
+	}
+
+	return game_over;
+}
+
+function hitBorder(){
 		game_over = false;
 		if(snake.body[snake.body.length-1][0]>29 || snake.body[snake.body.length-1][1]>29 || snake.body[snake.body.length-1][0]<0 || snake.body[snake.body.length-1][1]<0){
 			game_over = true;
-		} else if(checkIfArrayIsUnique(snake.body)===false){
-			game_over = true;
-		}
-
+		} 
 		return game_over;
-	}
+}
 
 function moveSnake(){
+	counter = 100
+	interval = setInterval(move,counter);
 
-	setInterval(move,100);
-
-	current_move = ''
+	current_move = 'r'
 
 	$(document).keydown(function(event){
 	  if (event.which === RIGHT && current_move !== 'l') {
@@ -74,46 +109,82 @@ function moveSnake(){
 		switch(current_move){
 			case 'r':
 				snake.body.push([snake.body[snake.body.length-1][0],snake.body[snake.body.length-1][1]+1])
-				$(`#x${snake.body[0][0]}y${snake.body[0][1]}`).css("background-color", "white")
-				snake.body.shift()
+				if(hitFood()===false){
+					$(`#x${snake.body[0][0]}y${snake.body[0][1]}`).css("background-color", "white");
+					snake.body.shift();
+				}
 				drawSnake()
 				break;
 			case 'l':
 				snake.body.push([snake.body[snake.body.length-1][0],snake.body[snake.body.length-1][1]-1])
-				$(`#x${snake.body[0][0]}y${snake.body[0][1]}`).css("background-color", "white")
-				snake.body.shift()
+				if(hitFood()===false){
+					$(`#x${snake.body[0][0]}y${snake.body[0][1]}`).css("background-color", "white");
+					snake.body.shift();
+				}
 				drawSnake()
 				break;
 			case 'u':
 				snake.body.push([snake.body[snake.body.length-1][0]-1,snake.body[snake.body.length-1][1]])
-				$(`#x${snake.body[0][0]}y${snake.body[0][1]}`).css("background-color", "white")
-				snake.body.shift()
+				if(hitFood()===false){
+					$(`#x${snake.body[0][0]}y${snake.body[0][1]}`).css("background-color", "white");
+					snake.body.shift();
+				}
 				drawSnake()
 				break;
 			case 'd':
 				snake.body.push([snake.body[snake.body.length-1][0]+1,snake.body[snake.body.length-1][1]])
-				$(`#x${snake.body[0][0]}y${snake.body[0][1]}`).css("background-color", "white")
-				snake.body.shift()
+				if(hitFood()===false){
+					$(`#x${snake.body[0][0]}y${snake.body[0][1]}`).css("background-color", "white");
+					snake.body.shift();
+				}
 				drawSnake()
 				break;
 		}
 
-		if(gameOver()===true){
-			alert("You lose!");
-			prompt("would you like to play again?");
+		moveFood();
+
+		if(hitFood()===true){
+			clearInterval(interval);
+			setInterval(move,counter-50);
+		}
+
+		if(selfIntersection()===true){
+			clearInterval(interval);
+			alert("You ran into yourself!");
+			var r = confirm("would you like to play again?");
+			if (r === true){
+				reloadGame();
+				playGame();
+			}
+		}
+
+		if(hitBorder()===true){
+			clearInterval(interval);
+			alert("You hit the wall!");
+			var r = confirm("would you like to play again?");
+			if (r === true){
+				reloadGame();
+				playGame();
+			}
 		}
 	}
+}
 
+function reloadGame(){
+	$('.box').remove();
+	snake.body = [[15,1],[15,2],[15,3]];
+	snake.direction = 'r';
+	$('#score').text('Score:');
+}
 
-
-
-
-
-
+function playGame(){
+	grid(30,30);
+	drawSnake();
+	foodPlacement();
+	moveSnake();
 }
 
 $(document).ready(function(){
-	grid(30,30);
-	drawSnake();
-	moveSnake();
+	playGame();
 });
+

@@ -8,6 +8,7 @@
 	float:left;
 	
 
+
 }
 
 #content{
@@ -17,4 +18,17 @@
 
 }
 
+#food{
+	width:14px;
+	height:14px;
+	display:inline-block;
+	background-color: orange;
+	border-radius: 10px;
 
+}
+
+#score{
+	font-size: 4em;
+	position:absolute;
+	bottom:50px;
+}
