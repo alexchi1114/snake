@@ -3,6 +3,10 @@ RIGHT=39;
 UP=38;
 DOWN=40;
 
+var score = 0;
+
+var high_score = 0;
+
 var snake = {
 	body:[[15,1],[15,2],[15,3]],
 	direction: 'r'	
@@ -14,9 +18,9 @@ var food = {
 }
 
 function foodPlacement(){
-	food.position = [Math.floor(Math.random()*29),Math.floor(Math.random()*29)];
+	food.position = [Math.floor(Math.random()*19),Math.floor(Math.random()*19)];
 	while($(`#x${food.position[0]}y${food.position[1]}`).css('background-color')==='rgb(0, 128, 0)'){
-		food.position = [Math.floor(Math.random()*29),Math.floor(Math.random()*29)];
+		food.position = [Math.floor(Math.random()*19),Math.floor(Math.random()*19)];
 	}
 
 	$(`#x${food.position[0]}y${food.position[1]}`).append("<div id = 'food'></div>");
@@ -34,6 +38,7 @@ function moveFood(){
 	if(hitFood()===true){
 		$('#food').remove();
 		foodPlacement();
+		updateScore();
 	}
 }
 
@@ -77,15 +82,20 @@ function selfIntersection(){
 
 function hitBorder(){
 		game_over = false;
-		if(snake.body[snake.body.length-1][0]>29 || snake.body[snake.body.length-1][1]>29 || snake.body[snake.body.length-1][0]<0 || snake.body[snake.body.length-1][1]<0){
+		if(snake.body[snake.body.length-1][0]>19 || snake.body[snake.body.length-1][1]>19 || snake.body[snake.body.length-1][0]<0 || snake.body[snake.body.length-1][1]<0){
 			game_over = true;
 		} 
 		return game_over;
 }
 
+function updateScore(){
+	score+=snake.body.length-1;
+	$('#score').text(`Score: ${score}`);
+}
+
 function moveSnake(){
-	counter = 100
-	interval = setInterval(move,counter);
+
+	interval = setInterval(move,90);
 
 	current_move = 'r'
 
@@ -143,9 +153,8 @@ function moveSnake(){
 
 		moveFood();
 
-		if(hitFood()===true){
-			clearInterval(interval);
-			setInterval(move,counter-50);
+		if(hitFood===true){
+			updateScore();
 		}
 
 		if(selfIntersection()===true){
@@ -153,6 +162,10 @@ function moveSnake(){
 			alert("You ran into yourself!");
 			var r = confirm("would you like to play again?");
 			if (r === true){
+				if(score >high_score){
+					high_score = score;
+					$('#highscore').text(`High Score: ${high_score}`)
+				}
 				reloadGame();
 				playGame();
 			}
@@ -163,6 +176,10 @@ function moveSnake(){
 			alert("You hit the wall!");
 			var r = confirm("would you like to play again?");
 			if (r === true){
+				if(score >high_score){
+					high_score = score;
+					$('#highscore').text(`High Score: ${high_score}`);
+				}
 				reloadGame();
 				playGame();
 			}
@@ -174,11 +191,12 @@ function reloadGame(){
 	$('.box').remove();
 	snake.body = [[15,1],[15,2],[15,3]];
 	snake.direction = 'r';
-	$('#score').text('Score:');
+	score = 0;
+	$('#score').text('Score: 0');
 }
 
 function playGame(){
-	grid(30,30);
+	grid(20,20);
 	drawSnake();
 	foodPlacement();
 	moveSnake();
