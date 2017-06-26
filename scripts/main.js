@@ -203,6 +203,10 @@ function playGame(){
 }
 
 $(document).ready(function(){
-	playGame();
+	grid(20,20);
+	$('#play').click(function(){
+		reloadGame();
+		playGame();
+	});
 });
 
