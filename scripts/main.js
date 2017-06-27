@@ -3,9 +3,9 @@ RIGHT=39;
 UP=38;
 DOWN=40;
 
+
 var score = 0;
 
-var high_score = 0;
 
 var snake = {
 	body:[[15,1],[15,2],[15,3]],
@@ -160,12 +160,12 @@ function moveSnake(){
 		if(selfIntersection()===true){
 			clearInterval(interval);
 			alert("You ran into yourself!");
+			if(score > localStorage.getItem('highscore')){
+					localStorage.setItem('highscore', score);
+					$('#highscore').text(`High Score: ${localStorage.getItem('highscore')}`)
+			}
 			var r = confirm("would you like to play again?");
 			if (r === true){
-				if(score >high_score){
-					high_score = score;
-					$('#highscore').text(`High Score: ${high_score}`)
-				}
 				reloadGame();
 				playGame();
 			}
@@ -174,12 +174,12 @@ function moveSnake(){
 		if(hitBorder()===true){
 			clearInterval(interval);
 			alert("You hit the wall!");
+			if(score > localStorage.getItem('highscore')){
+					localStorage.setItem('highscore', score);
+					$('#highscore').text(`High Score: ${localStorage.getItem('highscore')}`)
+			}
 			var r = confirm("would you like to play again?");
 			if (r === true){
-				if(score >high_score){
-					high_score = score;
-					$('#highscore').text(`High Score: ${high_score}`);
-				}
 				reloadGame();
 				playGame();
 			}
@@ -204,6 +204,10 @@ function playGame(){
 
 $(document).ready(function(){
 	grid(20,20);
+	if(localStorage.getItem('highscore')===null){
+		localStorage.setItem('highscore',0);
+	}
+	$('#highscore').text(`High Score: ${localStorage.getItem('highscore')}`);
 	$('#play').click(function(){
 		reloadGame();
 		playGame();
